@@ -1,5 +1,5 @@
-"use client"
-import { NextUIProvider } from '@nextui-org/react'
+import {Providers} from "./providers";
+
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -14,9 +14,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextUIProvider>
+        <Providers>
         {children}
-        </NextUIProvider>
+        </Providers>
         
         </body>
     </html>
