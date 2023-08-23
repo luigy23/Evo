@@ -1,3 +1,4 @@
+"use client"
 import { NextUIProvider } from '@nextui-org/react'
 import './globals.css'
 import { Inter } from 'next/font/google'

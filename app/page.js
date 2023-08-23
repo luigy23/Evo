@@ -1,3 +1,6 @@
+"use client"
+
+import { Button } from '@nextui-org/react'
 import Image from 'next/image'
 
 export default function Home() {
@@ -7,6 +10,7 @@ export default function Home() {
       <h1>
         Hola
       </h1>
+      <Button variant='shadow' color='success'>Click me</Button>
      
     </main>
   )
