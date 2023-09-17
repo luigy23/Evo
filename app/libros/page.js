@@ -193,7 +193,7 @@ const Libros = () => {
                 )
                 .map((libro) => {
                   const color = colores[libro.id % colores.length]
-                  return <Libro libro={libro} color={color} handleEditar={handleEditar}
+                  return <Libro key={libro.id} libro={libro} color={color} handleEditar={handleEditar}
                    />
                 }))
             : (

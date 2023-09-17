@@ -33,3 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# algunos archivos de la carpeta public de next, como sw.js y workbox-*.js
+/public/sw.js
+/public/workbox-*.js
+
+
