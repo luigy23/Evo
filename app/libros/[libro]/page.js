@@ -1,14 +1,18 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import supabase from '@/app/services/supabase'
-import BtnActualizar from './componentes/BtnActualizar'
 import IconArrowUpdate from '@/app/Icons/IconArrowUpdate'
 import { Button, Input, Skeleton, Textarea, useDisclosure, Modal, ModalBody, ModalContent } from '@nextui-org/react'
 import IconAdd from '@/app/Icons/IconAdd'
+import { useRouter } from 'next/navigation'
+import IconArrowLeft from '@/app/Icons/IconArrowLeft'
 
 
 
 const Libro =  ({params}) => {
+
+    const router = useRouter()
+    
 
     const NombreLibro = decodeURI(params.libro)
     console.log(NombreLibro)
@@ -154,7 +158,13 @@ const Libro =  ({params}) => {
     <>
     <main className="flex min-h-screen flex-col  relative items-center justify-start p-5 md:p-24 bg-smoke-900 gap-3 dark">
        <div className='w-full items-center justify-center flex flex-col'>
-            <div className='flex gap-2 w-full items-center justify-center'>
+
+            <div className='flex gap-2 w-full items-center justify-between'>
+            <Button color="default" auto isIconOnly variant='flat' onClick={
+              () => router.back()
+       }>
+            <IconArrowLeft  className="text-slate-300"/>
+            </Button>
             <h1 className='text-slate-100 font-bold text-2xl md:text-3xl'> {NombreLibro}</h1>
             <Button color="success" auto isIconOnly variant='flat' onClick={recargar}>
             <IconArrowUpdate />

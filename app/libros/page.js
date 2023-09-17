@@ -158,7 +158,7 @@ const Libros = () => {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col relative items-center justify-start p-24 bg-smoke-900 gap-3 dark">
+      <main className="flex min-h-screen flex-col relative items-center justify-start  p-24 bg-smoke-900 gap-3 dark">
         {/* Formulario de busqueda */}
         <form className="flex flex-col gap-3 items-center justify-center w-full">
           <h1>Libros</h1>
