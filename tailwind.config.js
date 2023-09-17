@@ -73,6 +73,11 @@ module.exports = {
         '800': '#1a1a1e',
         '900': '#0c0c0e',
       },
+      'success': '#18cf5e',
+      'error': '#ff5252',
+      'warning': '#ffc107',
+      'info': '#2196f3',
+      'gray': '#e0e0e0',
       }
     },
   },
