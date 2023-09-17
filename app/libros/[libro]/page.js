@@ -112,34 +112,60 @@ const Libro =  ({params}) => {
         editarEnseñanza(enseñanzaSeleccionada.id, enseñanzaSeleccionada.texto)
         onOpenChange()
     }
+    const borrarenseñanza = async (id) => {
+        const { data, error } = await supabase
+            .from('Enseñanzas')
+            .delete()
+            .eq('id', id)
+        console.log(data, error)
+        if (error) {
+            alert('Ocurrio un error al borrar la enseñanza')
+            return
+        }
+        recargar()
+        onOpenChange()
+    }
+    const handleClickBorrarEnseñanza = (id) => {
+        if (confirm('¿Estas seguro de borrar esta enseñanza?')) {
+            borrarenseñanza(id)
+        }
+    }
+
+    const copiarTextoAlPortapapeles = (texto) => {
+        navigator.clipboard.writeText(texto)
+        alert('Texto copiado al portapapeles')
+    }
+
+
 
     
 
 
 
 
-    const colores = ['bg-danger-200 shadow-danger-300', ' bg-success-100 shadow-success-400 text-slate-800',
-   'bg-primary-200 shadow-primary-400 text-slate-800',
+    const colores = ['bg-danger-200 shadow-danger-300 text-slate-100', ' bg-success-100 shadow-success-400 text-slate-100',
+   'bg-primary-200 shadow-primary-400 text-slate-100',
+    'bg-warning-500 shadow-warning-400 text-slate-800',
 ]
 
 
 
   return (
     <>
-    <main className="flex min-h-screen flex-col relative items-center justify-start p-24 bg-smoke-900 gap-3 dark">
-       <div>
-            <div className='flex gap-2'>
-            <h1 className='text-slate-100 font-bold'> {NombreLibro}</h1>
+    <main className="flex min-h-screen flex-col  relative items-center justify-start p-5 md:p-24 bg-smoke-900 gap-3 dark">
+       <div className='w-full items-center justify-center flex flex-col'>
+            <div className='flex gap-2 w-full items-center justify-center'>
+            <h1 className='text-slate-100 font-bold text-2xl md:text-3xl'> {NombreLibro}</h1>
             <Button color="success" auto isIconOnly variant='flat' onClick={recargar}>
             <IconArrowUpdate />
             </Button>
             </div>
         <div className='bg-green-500 h-1 w-full rounded-xl mt-2'></div>
        </div>
-       <p className='text-slate-100'> {libro[0]&& libro[0].Descripcion} </p>
+       <p className='text-slate-400 text-sm'> {libro[0]&& libro[0].Descripcion} </p>
        <div className='flex gap-2 items-center justify-center w-full'
        >
-        <Textarea className='w-[80%]'  color='secondary' placeholder='Escribe una nueva enseñanza' value={nuevaEnseñanza} onChange={(e) => setNuevaEnseñanza(e.target.value)} />
+        <Textarea className='w-full md:w-[80%]'  color='secondary' placeholder='Escribe una nueva enseñanza' value={nuevaEnseñanza} onChange={(e) => setNuevaEnseñanza(e.target.value)} />
 
         <Button color="success" auto isIconOnly variant='flat' onClick={crearEnseñanza}>
             <IconAdd />
@@ -149,7 +175,7 @@ const Libro =  ({params}) => {
         
 
         <h2 className='text-slate-100'> Enseñanzas</h2>
-        <ul className='gap-2'>
+        <ul className=''>
             {
             
             enseñanzas.length > 0 ?(
@@ -157,11 +183,16 @@ const Libro =  ({params}) => {
             enseñanzas.map(enseñanza => {
             const color = colores[enseñanza.id % colores.length]
             return(
-                <li key={enseñanza.id} className={`shadow-md ${color} px-3 py-2 mb-2 rounded-lg`}
+                <li key={enseñanza.id} className={`shadow-md ${color} px-3 py-2 mb-4 rounded-lg`}
                 onClick={() => handleClickEnseñanza(enseñanza.texto, enseñanza.id
                 )}
+                onContextMenu={(e) => {
+                    e.preventDefault()
+                    copiarTextoAlPortapapeles(enseñanza.texto)
+
+                }}
                 >
-                    <p className='text-slate-100 whitespace-pre-wrap'> {enseñanza.texto}</p>
+                    <p className=' whitespace-pre-line text-base text-start'> {enseñanza.texto}</p>
                 </li>
             )}
             ))
@@ -196,9 +227,14 @@ const Libro =  ({params}) => {
                         value={enseñanzaSeleccionada.texto}
                         onChange={(e) => setEnseñanzaSeleccionada({ ...enseñanzaSeleccionada, texto: e.target.value })}
                         placeholder="Escribe una nueva enseñanza" color='primary' />
+                        <div className='flex gap-2 items-center justify-center w-full'>
                         <Button
                         type='submit'
                         className='mt-2' color='primary' variant='flat' auto>Editar</Button>
+                        <Button
+                        className='mt-2' color='danger' variant='flat' auto onClick={() => handleClickBorrarEnseñanza(enseñanzaSeleccionada.id)}>Borrar</Button>
+                        </div>
+                       
                     </div>
                 </form>
                 
