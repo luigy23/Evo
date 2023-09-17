@@ -1,16 +1,17 @@
 "use client"
-import { Button, Card, CardBody, CardHeader, Input, Modal, ModalBody, ModalContent, Skeleton, useDisclosure } from '@nextui-org/react'
-import React, { Suspense, useEffect, useState } from 'react'
+import { Button, Input, Modal, ModalBody, ModalContent, Skeleton, useDisclosure } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
 import IconNerd from '../Icons/NerdIcon'
 import supabase from '../services/supabase'
-import NextLink  from 'next/link'
 import IconSearch from '../Icons/SearchIcon'
 import IconBookOpen from '../Icons/IconBookOpen'
+import Libro, { LibroSkeleton } from './Componentes/Libro'
 
 const Libros = () => {
 
   const [libros, setLibros] = useState([])
   const [buscador, setBuscador] = useState('')
+  const [accion, setAccion] = useState('Crear Libro')
   const [nuevoLibro, setNuevoLibro] = useState({
     "Nombre del Libro": "",
     "Descripcion": ""
@@ -43,16 +44,42 @@ const Libros = () => {
     setLibros(data)
     console.log(data, error)
   }
-  const crearLibro = async (e) => {
+  const handleSumbit = async (e) => {
     e.preventDefault()
 
-//validamos datos
+    //validamos datos
     if (nuevoLibro["Nombre del Libro"] === '' || nuevoLibro["Descripcion"] === '') {
       alert('Debes llenar todos los campos')
       return
     }
+    if (accion === 'Crear Libro') {
+      crearLibro()
+      return
+    }
+    if (accion === 'Editar Libro') {
+      editarLibro()
+      return
+    }
 
 
+    
+    
+
+  }
+  const handleEditar = (libro) => {
+    
+    const libroEditado = {
+      id: libro.id,
+      "Nombre del Libro": libro["Nombre del Libro"],
+      "Descripcion": libro["Descripcion"]
+    }
+    setNuevoLibro(libroEditado)
+    setAccion('Editar Libro')
+    onOpenChange(true)
+
+    
+  }
+  const crearLibro = async () => {
     const { data, error } = await supabase
       .from('Libros')
       .insert(nuevoLibro)
@@ -71,9 +98,62 @@ const Libros = () => {
     })
     alert('Libro creado correctamente')
     onOpenChange(false)
-    
-
   }
+  const editarLibro = async () => {
+    const { data, error } = await supabase
+      .from('Libros')
+      .update(nuevoLibro)
+      .eq('id', nuevoLibro.id)
+    console.log(data, error)
+
+    if (error) {  
+      alert('Ocurrio un error al editar el libro')
+      return
+    }
+
+    cargarSupabase()
+    //limpiamos el formulario, cerramos el modal y mostramos un mensaje
+    setNuevoLibro({
+      "Nombre del Libro": "",
+      "Descripcion": ""
+    })
+    alert('Libro editado correctamente')
+    onOpenChange(false)
+  }
+  const eliminarLibro = async () => {
+
+    //preguntamos si esta seguro de eliminar el libro
+    const confirmacion = confirm('¿Estas seguro de eliminar el libro?')
+
+    if (!confirmacion) {
+      return
+    }
+
+
+
+    const { data, error } = await supabase
+      .from('Libros')
+      .delete()
+      .eq('id', nuevoLibro.id)
+    console.log(data, error)
+
+    if (error) {
+      alert('Ocurrio un error al eliminar el libro')
+      return
+    }
+
+    cargarSupabase()
+    //limpiamos el formulario, cerramos el modal y mostramos un mensaje
+    setNuevoLibro({
+      "Nombre del Libro": "",
+      "Descripcion": ""
+    })
+    alert('Libro eliminado correctamente')
+    onOpenChange(false)
+  }
+
+
+
 
 
   return (
@@ -101,37 +181,24 @@ const Libros = () => {
           </div>
 
         </form>
+        {/* Libros */}
         <section className="flex flex-col gap-3 mt-24 w-full  md:w-[80%]">
           {
-            libros.length > 0 ? (
-
+            libros.length > 0 
+            ? (
               libros
                 .filter((libro) =>
                   buscador === '' ||
                   libro["Nombre del Libro"].toLowerCase().includes(buscador.toLowerCase())
                 )
                 .map((libro) => {
-
                   const color = colores[libro.id % colores.length]
-
-                  console.log(`shadow-md ${color}`)
-                  return (
-                   
-                      <Card className={`shadow-md ${color}`} fullWidth={true}  key={libro.id} as={NextLink} 
-                      href={`/libros/${libro["Nombre del Libro"]}`}
-
-                      >
-                        <CardHeader className='py-2 '>
-                          <h3 className='font-semibold'>{libro["Nombre del Libro"]}</h3>
-                       </CardHeader>
-                      </Card>)
-                    
+                  return <Libro libro={libro} color={color} handleEditar={handleEditar}
+                   />
                 }))
-              : (
+            : (
                 <>
-                  <Skeleton className='rounded-md w-40 h-10 ' />
-                  <Skeleton className='rounded-md w-40 h-10 ' />
-                  <Skeleton className='rounded-md w-40 h-10 ' />
+                  <LibroSkeleton />
                 </>
               )
           }
@@ -140,40 +207,38 @@ const Libros = () => {
       </main>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent className='dark'>
-          {
-            (onClose) => (
-              <>
-                <ModalBody>
-                <form className="flex flex-col gap-2 items-center justify-center" onSubmit={crearLibro} >
-                    <h2 className='text-slate-300'>Crear libro</h2>
-                    <div className="flex gap-1 justify-center items-center  flex-wrap ">
-                      <Input
+            <ModalBody>
+            <form className="flex flex-col gap-2 items-center justify-center" onSubmit={handleSumbit} >
+                <h2 className='text-slate-300'>{accion}</h2>
+                <div className="flex gap-1 justify-center items-center  flex-wrap ">
+                  <Input
+                    value={nuevoLibro["Nombre del Libro"]}
+                    onChange={(e) => setNuevoLibro({ ...nuevoLibro, "Nombre del Libro": e.target.value })}
+                    placeholder="Nombre del libro" color='primary' startContent={<IconNerd className="w-5" />} />
+                  <Input
+                    className='min-w-40'
+                    value={nuevoLibro["Descripcion"]}
+                    onChange={(e) => setNuevoLibro({ ...nuevoLibro, "Descripcion": e.target.value })}
+                    placeholder="Descripcion" color='secondary' startContent={<IconBookOpen className="w-5" />} />
+                  <Button 
+                  type='submit'
+                  className='mt-2' color='primary' variant='flat' auto>{accion}</Button>
+                  {
+                    accion === 'Editar Libro' && (
+                      <Button
+                        className='mt-2' color='danger' variant='flat' auto onPress={eliminarLibro}>Eliminar</Button>
+                    )
 
-                        value={nuevoLibro["Nombre del Libro"]}
-                        onChange={(e) => setNuevoLibro({ ...nuevoLibro, "Nombre del Libro": e.target.value })}
-                        placeholder="Nombre del libro" color='primary' startContent={<IconNerd className="w-5" />} />
-                      <Input
-                        className='min-w-40'
-                        value={nuevoLibro["Descripcion"]}
-                        onChange={(e) => setNuevoLibro({ ...nuevoLibro, "Descripcion": e.target.value })}
-                        placeholder="Descripcion" color='secondary' startContent={<IconBookOpen className="w-5" />} />
-                      <Button 
-                      type='submit'
-                      className='mt-2' color='primary' variant='flat' auto>Crear</Button>
-                    </div>
+                      
+                  }
+                </div>
 
-                  </form>
-                
-                </ModalBody>
-                </>
-                )
-          }
-          </ModalContent>
-
-
+            </form>
+            </ModalBody>
+        </ModalContent>
       </Modal>
-        </>
+    </>
         )
 }
 
-        export default Libros
+export default Libros
