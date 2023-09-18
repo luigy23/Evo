@@ -28,5 +28,12 @@
             "sizes": "512x512",
             "type": "image/png"
         }
+    ],
+    "shortcuts":[
+        {
+            "name": "Ver Libros",
+            "url": "/libros",
+            "description": "Ver los libros agregados"
+          }
     ]
 }
