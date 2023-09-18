@@ -2,10 +2,10 @@
 import { Button, Input, Modal, ModalBody, ModalContent, Skeleton, useDisclosure } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 import IconNerd from '../Icons/NerdIcon'
-import supabase from '../services/supabase'
 import IconSearch from '../Icons/SearchIcon'
 import IconBookOpen from '../Icons/IconBookOpen'
 import Libro, { LibroSkeleton } from './Componentes/Libro'
+import { cargarLibros, crearteLibro, editarLibro, eliminarLibro } from '../services/Apis/Libros'
 
 const Libros = () => {
 
@@ -18,31 +18,22 @@ const Libros = () => {
   })
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // Libros:
-
-  // [ {
-  //     "id": 1,
-  //     "created_at": "2023-09-12T21:38:28.651966+00:00",
-  //     "Nombre del Libro": "Vendes o Vendes",
-  //     "Descripcion": "Un libro de ventas y de negocios, de como tratar a los clientes etc"
-  // },]
-
   const colores = ['bg-danger-400 shadow-danger-300', ' bg-success-500 shadow-success-400 text-slate-800',
     'bg-warning-500 shadow-warning-400 text-slate-800', 'bg-primary-500 shadow-primary-400 text-slate-800',
 
 ]
-
   useEffect(() => {
     cargarSupabase()
   }, [])
 
   const cargarSupabase = async () => {
-    const { data, error } = await supabase
-      .from('Libros')
-      .select('*')
-    setLibros(data)
-    console.log(data, error)
+    const res = await cargarLibros()
+    if (!res) {
+      alert('Ocurrio un error al cargar los libros')
+      return
+    }
+    setLibros(res)
+    
   }
   const handleSumbit = async (e) => {
     e.preventDefault()
@@ -57,7 +48,7 @@ const Libros = () => {
       return
     }
     if (accion === 'Editar Libro') {
-      editarLibro()
+      editareLibro()
       return
     }
 
@@ -80,67 +71,38 @@ const Libros = () => {
     
   }
   const crearLibro = async () => {
-    const { data, error } = await supabase
-      .from('Libros')
-      .insert(nuevoLibro)
-    console.log(data, error)
 
-    if (error) {
+    const res = await crearteLibro(nuevoLibro)
+    if (!res) {
       alert('Ocurrio un error al crear el libro')
       return
     }
-
-    cargarSupabase()
-    //limpiamos el formulario, cerramos el modal y mostramos un mensaje
-    setNuevoLibro({
-      "Nombre del Libro": "",
-      "Descripcion": ""
-    })
-    alert('Libro creado correctamente')
-    onOpenChange(false)
+    limpiarYCargar('creado')
   }
-  const editarLibro = async () => {
-    const { data, error } = await supabase
-      .from('Libros')
-      .update(nuevoLibro)
-      .eq('id', nuevoLibro.id)
-    console.log(data, error)
-
-    if (error) {  
+  const editareLibro = async () => {
+    const res = await editarLibro(nuevoLibro)
+    if (!res) {  
       alert('Ocurrio un error al editar el libro')
       return
     }
+    limpiarYCargar('editado')
 
-    cargarSupabase()
-    //limpiamos el formulario, cerramos el modal y mostramos un mensaje
-    setNuevoLibro({
-      "Nombre del Libro": "",
-      "Descripcion": ""
-    })
-    alert('Libro editado correctamente')
-    onOpenChange(false)
   }
-  const eliminarLibro = async () => {
+  const eliminarteLibro = async () => {
 
     //preguntamos si esta seguro de eliminar el libro
     const confirmacion = confirm('¿Estas seguro de eliminar el libro?')
-
     if (!confirmacion) {
       return
     }
-
-
-
-    const { data, error } = await supabase
-      .from('Libros')
-      .delete()
-      .eq('id', nuevoLibro.id)
-    console.log(data, error)
-
-    if (error) {
+    const res = await eliminarLibro(nuevoLibro.id)
+    if (!res) {
       alert('Ocurrio un error al eliminar el libro')
       return
     }
+    limpiarYCargar('eliminado')
+  }
+  const limpiarYCargar = (accion) => {
 
     cargarSupabase()
     //limpiamos el formulario, cerramos el modal y mostramos un mensaje
@@ -148,10 +110,9 @@ const Libros = () => {
       "Nombre del Libro": "",
       "Descripcion": ""
     })
-    alert('Libro eliminado correctamente')
+    alert(`Libro ${accion} correctamente`)
     onOpenChange(false)
   }
-
 
 
 
@@ -226,7 +187,7 @@ const Libros = () => {
                   {
                     accion === 'Editar Libro' && (
                       <Button
-                        className='mt-2' color='danger' variant='flat' auto onPress={eliminarLibro}>Eliminar</Button>
+                        className='mt-2' color='danger' variant='flat' auto onPress={eliminarteLibro}>Eliminar</Button>
                     )
 
                       

@@ -1,13 +1,27 @@
 "use client"
 
-import { Button, Card, CardBody, CardFooter, Divider, } from '@nextui-org/react'
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider, } from '@nextui-org/react'
 import Image from 'next/image'
 import NextLink from 'next/link'
 
 import Chat from './Componentes/Chat/Chat'
+import { ObtenerEnseñanzasAlAzar } from './services/Funciones/Varias'
+import { useEffect, useState } from 'react'
+import IconNextArrow from './Icons/IconNextArrow'
 
 export default function Home() {
 
+  const [consejo, setConsejo] = useState({})
+
+  const ObtenerConsejo = async () => {
+    const consejo = await ObtenerEnseñanzasAlAzar()
+    setConsejo(consejo)
+  }
+  useEffect(() => {
+    ObtenerConsejo()
+  }, [])
+
+  
 
 
   return (
@@ -34,18 +48,35 @@ export default function Home() {
 
 
 
-      <Card shadow='md' width='300px' height='300px' className='flex flex-col items-center justify-center gap-3'
+      <Card shadow='md' 
         isBlurred={true}
+        fullWidth={true}
       >
+        <CardHeader>
+         <h2>Consejo para hoy</h2>
+        </CardHeader>
+        <Divider />
         <CardBody >
-          <h1>un consejo para hoy?</h1>
-          <Divider />
-          
+          <p className='text-slate-100 whitespace-pre-wrap'>{consejo.enseñanza}</p>
         </CardBody>
+        <CardFooter  >
+          <div className='flex w-full  gap-2 justify-between'>
+          <Chip color='success' className=' h-auto py-0' variant='flat' href={`/libros/${consejo.libro}`} as={NextLink}>
+            <h3>{consejo.libro}</h3>
+          </Chip>
+          <Button
+            onClick={ObtenerConsejo}
+            isIconOnly
+            variant='shadow' color='success'>
+              <IconNextArrow/>
+          </Button>
+          </div>
+        </CardFooter>
+
       </Card>
 
 
-      <Button variant='shadow' color='success'>Click me</Button>
+     
 
     </main>
   )
