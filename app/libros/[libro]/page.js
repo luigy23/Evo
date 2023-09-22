@@ -6,6 +6,7 @@ import { Button, Input, Skeleton, Textarea, useDisclosure, Modal, ModalBody, Mod
 import IconAdd from '@/app/Icons/IconAdd'
 import { useRouter } from 'next/navigation'
 import IconArrowLeft from '@/app/Icons/IconArrowLeft'
+import { traerLibroNombre } from '@/app/services/Apis/Libros'
 
 
 
@@ -20,31 +21,26 @@ const Libro =  ({params}) => {
     const [enseñanzas, setEnseñanzas] = useState([])
     const [nuevaEnseñanza, setNuevaEnseñanza] = useState('')
     const [enseñanzaSeleccionada, setEnseñanzaSeleccionada] = useState({id: '', texto: ''})
-
+    const [accion, setAccion] = useState('')
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 
 
     useEffect(() => {
         console.log("hola")
-        getLibro(NombreLibro).then(data => {
+        console.log(NombreLibro)
+        traerLibroNombre(NombreLibro).then(data => {
+            console.log(data)
+            setLibro(data)
             getEnseñanza(data[0].id)
-        })
+        }
+        )
 
     }, [])
 
 
 
-    const getLibro = async (NombreLibro) => {
-        console.log(NombreLibro)
-        const { data, error } = await supabase
-            .from('Libros')
-            .select('*')
-            .eq('Nombre del Libro', NombreLibro)
-        console.log(data, error)
-        setLibro(data)
-        return data
-    }
+
     const getEnseñanza = async (id) => {
 
         const { data, error } = await supabase
@@ -57,7 +53,7 @@ const Libro =  ({params}) => {
     }
 
     const recargar = () => {
-        getLibro(NombreLibro).then(data => {
+        traerLibroNombre(NombreLibro).then(data => {
             getEnseñanza(data[0].id)
         })
     }
@@ -224,8 +220,7 @@ const Libro =  ({params}) => {
 
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='4xl' >
         <ModalContent className='dark w-full' >
-          {
-            (onClose) => (
+
               <>
                 <ModalBody className='w-full'>
                 <form className="flex flex-col gap-2 items-center justify-center w-full" onSubmit={handlesumbitEditarEnseñanza}
@@ -247,11 +242,9 @@ const Libro =  ({params}) => {
                        
                     </div>
                 </form>
-                
                 </ModalBody>
                 </>
-                )
-          }
+
           </ModalContent>
 
 

@@ -13,6 +13,8 @@ export default function Home() {
 
   const [consejo, setConsejo] = useState({})
 
+
+
   const ObtenerConsejo = async () => {
     const consejo = await ObtenerEnseñanzasAlAzar()
     setConsejo(consejo)
@@ -34,7 +36,7 @@ export default function Home() {
           <h1>¿Qué quieres hacer?</h1>
         </CardBody>
         <CardFooter className='gap-2 justify-center flex flex-wrap' >
-          <Button  variant='shadow' color='success'>📅 Rutina</Button>
+          <Button href='/ejercicio' as={NextLink} variant='shadow' color='success'>🏋️‍♂️ Ejercicio</Button>
           <Button variant='shadow' color='primary'>📝 Nota</Button>
           <Button variant='shadow' color='default'>🎯 Objetivo</Button>
           <Button variant='shadow' color='warning'>📈 Ventas</Button>

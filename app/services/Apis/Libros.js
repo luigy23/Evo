@@ -64,6 +64,23 @@ export const traerLibro = async (id) => {
     }
     return data[0]
 }
+ const traerLibroNombre = async (NombreLibro) => {
+    console.log(NombreLibro)
+     const { data, error } = await supabase
+         .from('Libros')
+         .select('*')
+         .eq('Nombre del Libro', NombreLibro)
+     console.log(data, error)
+    
+     if (error) {
+        console.log('Ocurrio un error al traer el libro')
+        console.log(error)
+        return false
+    }
+     return data
+
+  
+}
 
 const traerNombreIdLibros = async () => {
     const { data, error } = await supabase
@@ -85,5 +102,7 @@ module.exports = {
     editarLibro,
     crearteLibro,
     eliminarLibro,
-    traerNombreIdLibros
+    traerNombreIdLibros,
+    traerLibro,
+    traerLibroNombre
 }
