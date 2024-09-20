@@ -37,9 +37,11 @@ export default function Home() {
         </CardBody>
         <CardFooter className='gap-2 justify-center flex flex-wrap' >
           <Button href='/ejercicio' as={NextLink} variant='shadow' color='success'>🏋️‍♂️ Ejercicio</Button>
-          <Button variant='shadow' color='primary'>📝 Nota</Button>
+          <Button href='/dinero' as={NextLink} variant='shadow' color='primary'>💰 Dinero</Button>
           <Button variant='shadow' color='default'>🎯 Objetivo</Button>
           <Button variant='shadow' color='warning'>📈 Ventas</Button>
+         
+
           <Button href='/libros' as={NextLink} variant='shadow' color='danger'>🧠 Sabiduría</Button>
         </CardFooter>
 
