@@ -6,6 +6,8 @@ import IconNerd from '../Icons/NerdIcon'
 import { cargarSaldos, crearteSaldo } from '@/app/services/Apis/Saldos'
 import { formatearDinero } from '../services/Funciones/Formateadores'
 import { IconDollar } from '../Icons/IconDollar'
+import SaldoItem from './Componentes/SaldoItem'
+import BackButton from '../Componentes/Chat/BotonBack'
 const DineroPage = () => {
 
 	const [saldos, setSaldos] = useState([{
@@ -63,11 +65,15 @@ const DineroPage = () => {
 
 	return (
 		<>
-			<main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-smoke-900 gap-3 dark">
+			<main className="flex min-h-screen flex-col items-center justify-start p-4 md:p-24 bg-smoke-900 gap-3 dark">
 
 				<form className="flex flex-col gap-3 items-center justify-center w-full">
+
+					<div className="w-full flex items-center justify-between gap-3 pt-2 ">
+					<BackButton	/>
 					<h1>Saldos</h1>
-					<div className="flex-wrap md:flex gap-1 w-full  items-center justify-center">
+					</div>
+					<div className="mt-8 flex-wrap md:flex gap-1 w-full  items-center justify-center">
 						<Input
 
 
@@ -89,7 +95,7 @@ const DineroPage = () => {
 
 				{/* Saldos */}
 
-				<section className="flex flex-col gap-3 mt-24 w-full  md:w-[80%]">
+				<section className="flex flex-col gap-3 mt-5 w-full  md:w-[80%]">
 					{
 						saldos.length > 0
 							? (
@@ -100,20 +106,7 @@ const DineroPage = () => {
 									)
 									.map((saldo) => {
 										return (
-											<a 
-											href={`/dinero/${saldo.id}`}
-											
-
-											key={saldo.id} className="bg-smoke-600 shadow-primary-400 text-slate-100 p-2 rounded-xl flex items-center justify-between gap-2">
-												<div>
-													<p>{saldo.Descripcion}</p>
-
-
-												</div>
-												<div>
-													<Chip color='success' variant='flat' >{formatearDinero(saldo.Dinero)}</Chip>
-												</div>
-											</a>
+											<SaldoItem key={saldo.id} saldo={saldo} />
 										)
 									})
 							)

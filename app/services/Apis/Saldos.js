@@ -44,6 +44,21 @@ const crearteSaldo = async (saldo) => {
     return true
 }
 
+const eliminarSaldo = async (id) => {
+    const { data, error } = await supabase
+        .from('Saldos')
+        .delete()
+        .eq('id', id)
+    console.log(data, error)
+
+    if (error) {
+        console.log('Ocurrio un error al eliminar el saldo')
+        return false
+    }
+    return true
+}
+
+
 // Gastos
 
  const cargarGastosPorId = async (id) => {
@@ -100,6 +115,7 @@ module.exports = {
     editarSaldo,
     crearteSaldo,
     obtenerSaldo,
+    eliminarSaldo,
     cargarGastosPorId,
     crearGasto,
     editarGasto,

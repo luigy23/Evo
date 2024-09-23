@@ -3,6 +3,8 @@ import { cargarGastosPorId, obtenerSaldo, crearGasto } from '@/app/services/Apis
 import { formatearDinero } from '@/app/services/Funciones/Formateadores'
 import { Button, Chip, Input } from '@nextui-org/react'
 import React, { useEffect, useState } from 'react'
+import GastoItem from '../Componentes/GastoItem'
+import BackButton from '@/app/Componentes/Chat/BotonBack'
 
 const Saldo = ({ params }) => {
 
@@ -89,26 +91,30 @@ const Saldo = ({ params }) => {
     return (
 
         <main className="flex min-h-screen flex-col  relative items-center justify-start p-5 md:p-24 bg-smoke-900 gap-3 dark">
+          
+          <div className='w-full flex items-center justify-between gap-3'>
+            {/* Boton back */}
+            <BackButton />
             <h1>{saldo.Descripcion}</h1>
+            </div>
             <Chip color='success' variant='flat' className='text-xl' auto>{formatearDinero(saldo.Dinero)}</Chip>
 
-            <h2>Gastos</h2>
+            {/* Seccion de gastos con scroll si hay muchos */}
+            <section className="flex pb-40 flex-col gap-3 py-4 w-full md:w-[80%]  h-[50vh] overflow-y-scroll  ">
             {
                 gastos.map(gasto => {
                     return (
-                        <div key={gasto.id} className="bg-smoke-600 shadow-primary-400 text-slate-100 p-2 rounded-xl flex items-center justify-between gap-2">
-                            <div>
-                                <p contentEditable >{gasto.Descripcion}</p>
-                            </div>
-                            <div>
-                                <Chip color='success' variant='flat' >{formatearDinero(gasto.Valor)}</Chip>
-                            </div>
-                        </div>
+                       <GastoItem key={gasto.id} gasto={gasto} limpiarYCargar={limpiarYCargar} />
                     )
                 })
             }
+            </section>
 
-            {/* El estilo del formulario deber ser como si fuera un gasto pero editable */}
+          
+
+           
+            {/* la seccion de EL subtotal fijo en la parte inferior */}
+            <section className="flex flex-col gap-3  w-[90%]  md:w-[80%] absolute bottom-0 items-center justify-between py-2">
             <form
                 onSubmit={handleSumbit}
                 className="flex flex-col gap-3 items-center justify-center w-full">
@@ -120,12 +126,10 @@ const Saldo = ({ params }) => {
                 className='md:w-80'
                 color='success' variant='flat' startContent='$'
                 value={nuevoGasto.Valor} onChange={handleNuevoGasto} name="Valor" placeholder="Dinero" />
-                <Button color='primary' auto type='submit' >Crear Gasto</Button>
+                <div className='w-full flex items-center justify-between gap-3'>
+                <Chip color='success' variant='flat' auto>{formatearDinero(nuevoGasto.Valor)}</Chip>
+                <Button color='primary' auto type='submit' >Crear Gasto</Button></div>
             </form>
-
-           
-            {/* la seccion de EL subtotal fijo en la parte inferior */}
-            <section className="flex flex-col gap-3 mt-24 w-full  md:w-[80%] absolute bottom-0 items-center justify-between py-2">
             <div className="bg-green-500 h-1 w-full rounded-xl mt-2"></div>
             <Chip color='success' variant='flat' className='text-xl' auto>{formatearDinero(subtTotal)}</Chip>
             </section>
